@@ -28,14 +28,15 @@ bool check_prime(int x, vector<bool>& S) {
 
 void check(vector<bool>& S, int x, int y) {
     int sum = 0;
-    if (find(Data, Data + Size, x) == Data + Size || find(Data, Data + Size, y) == Data + Size) {
+    auto left = find(Data, Data + Size, x);
+    auto right = find(Data, Data + Size, y);
+    if (left == Data + Size || right == Data + Size) {
         cout << 0 << endl;
         return;
     }
-    for (size_t i = 0; i < Size; i++) {
-        if (Data[i] > y) break;
-        if (Data[i] >= x)
-            if (check_prime(Data[i], S)) sum++;
+    for (auto i = left; i < Data + Size; i++) {
+        if (*i > y) break;
+        if (check_prime(*i, S)) sum++;
     }
     cout << sum << endl;
 }
