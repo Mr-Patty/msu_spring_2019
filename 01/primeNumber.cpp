@@ -1,8 +1,6 @@
 #include <iostream>
-#include <stdlib.h>
 #include <vector>
 #include <algorithm>
-#include <math.h>
 #include "numbers.dat"
 
 using namespace std;
@@ -19,13 +17,6 @@ vector<bool> sieve() {
     return S;
 }
 
-
-
-bool check_prime(int x, vector<bool>& S) {
-    if (S[x]) return true;
-    return false;
-}
-
 void check(vector<bool>& S, int x, int y) {
     int sum = 0;
     auto left = find(Data, Data + Size, x);
@@ -36,21 +27,19 @@ void check(vector<bool>& S, int x, int y) {
     }
     for (auto i = left; i < Data + Size; i++) {
         if (*i > y) break;
-        if (check_prime(*i, S)) sum++;
+        if (S[*i]) sum++;
     }
     cout << sum << endl;
 }
 
 int main(int argc, char* argv[]) {
-    vector<int> vec;
     if (argc % 2 == 0 || argc == 1)
         return -1;
-    for (int i = 1; i < argc; ++i) {
-        int v = std::atoi(argv[i]);
-        vec.push_back(v);
-    }
     auto S = sieve();
-    for (size_t j = 0; j < vec.size() - 1; j += 2)
-        check(S, vec[j], vec[j + 1]);
+    for (int i = 1; i < argc - 1; i += 2) {
+        int v1 = std::atoi(argv[i]);
+        int v2 = std::atoi(argv[i + 1]);
+        check(S, v1, v2);
+    }
     return 0;
 }
