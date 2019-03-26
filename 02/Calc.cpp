@@ -23,9 +23,9 @@ struct Tokenizer {
     Tokenizer(Token y, char prev = 0, int64_t x = 0) : number(x), prev(prev), t(y) {}
 };
 
-Tokenizer token(istream* exp) {
+Tokenizer token(istream& exp) {
     char c;
-    while(exp->get(c)) {
+    while(exp.get(c)) {
         switch (c) {
             case ' ':
                 continue;
@@ -48,7 +48,7 @@ Tokenizer token(istream* exp) {
 
 }
 
-int64_t prim(istream* exp) {
+int64_t prim(istream& exp) {
     Tokenizer res = token(exp);
 
     switch (res.t) {
@@ -65,7 +65,7 @@ int64_t prim(istream* exp) {
     }
 }
 
-int64_t term(istream* exp) {
+int64_t term(istream& exp) {
     int64_t left = prim(exp);
 
     while (true) {
@@ -86,13 +86,13 @@ int64_t term(istream* exp) {
             case Error:
                 throw invalid_argument("invalid expression");
             default:
-                exp->putback(res.prev);
+                exp.putback(res.prev);
                 return left;
         }
     }
 }
 
-int64_t expr(istream* exp) {
+int64_t expr(istream& exp) {
     int64_t left = term(exp);
 
     while (true) {
@@ -118,16 +118,12 @@ int main(int argc, char* argv[]) {
         cout << "error" << endl;
         return 1;
     }
-    auto text = new std::istringstream(argv[1]);
+    auto text = istringstream(argv[1]);
     try{
         cout << expr(text) << endl;
     }
 
-    catch (runtime_error& e) {
-        cout << "error" << endl;
-        return 1;
-    }
-    catch  (logic_error& e) {
+    catch (const exception& e) {
         cout << "error" << endl;
         return 1;
     }
