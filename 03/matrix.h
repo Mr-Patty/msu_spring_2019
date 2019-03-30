@@ -18,7 +18,7 @@ private:
 
         Vector(size_t n, int* vec) : len(n), vector(vec){}
 
-        const int& operator[](const size_t y) const {
+        const int operator[](const size_t y) const {
             if ((y < 0) || (y >= len)) {
                 throw std::out_of_range("");
             }
@@ -40,12 +40,17 @@ public:
     ~Matrix() {
         free(matrix);
     }
-    Matrix(const Matrix& m) {
+    Matrix(const Matrix& m)
+        : matrix(m.matrix), rows(m.rows), cols(m.cols), N(m.N)
+    {}
+    Matrix& operator=(const Matrix& m) {
         matrix = m.matrix;
         rows = m.rows;
         cols = m.cols;
         N = m.N;
+        return *this;
     }
+
     Vector operator[](const size_t x) {
         if ((x < 0) || (x >= rows)) {
             throw std::out_of_range("");
