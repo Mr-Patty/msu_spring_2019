@@ -41,13 +41,23 @@ public:
         free(matrix);
     }
     Matrix(const Matrix& m)
-        : matrix(m.matrix), rows(m.rows), cols(m.cols), N(m.N)
-    {}
+        : rows(m.rows), cols(m.cols), N(m.N)
+    {
+        int* tmp = new int[m.N];
+        delete[] matrix;
+        matrix = tmp;
+        std::copy(m.matrix, m.matrix + N, matrix);
+    }
     Matrix& operator=(const Matrix& m) {
-        matrix = m.matrix;
+        if (this == &m)
+            return *this;
         rows = m.rows;
         cols = m.cols;
         N = m.N;
+        int* tmp = new int[m.N];
+        delete[] matrix;
+        matrix = tmp;
+        std::copy(m.matrix, m.matrix + N, matrix);
         return *this;
     }
 
