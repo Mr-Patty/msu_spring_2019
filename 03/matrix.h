@@ -16,7 +16,7 @@ private:
     public:
         Vector() : len(0) {}
 
-        Vector(size_t n, int* vec) : len(n), vector(vec){}
+        Vector(size_t n, int* vec) : len(n), vector(vec) {}
 
         const int operator[](const size_t y) const {
             if ((y < 0) || (y >= len)) {
@@ -57,6 +57,7 @@ public:
         cols = m.cols;
         N = m.N;
         int* tmp = new int[m.N];
+
         if (matrix != nullptr)
             free(matrix);
         matrix = tmp;
@@ -87,22 +88,18 @@ public:
         }
         return *this;
     };
-    friend bool operator==(const Matrix &left, const Matrix &right);
-    friend bool operator!=(const Matrix &left, const Matrix &right);
-};
-
-bool operator==(const Matrix &left, const Matrix &right) {
-    if (left.getRows() != right.getRows() || left.getColumns() != right.getColumns())
-        return false;
-    for (size_t i = 0; i < left.rows; i++) {
-        for (size_t j = 0; j < left.cols; j++) {
-            if (left[i][j] != right[i][j])
-                return false;
+    bool operator==(const Matrix &right) const {
+        if (rows != right.getRows() || cols != right.getColumns())
+            return false;
+        for (size_t i = 0; i < rows; i++) {
+            for (size_t j = 0; j < cols; j++) {
+                if ((*this)[i][j] != right[i][j])
+                    return false;
+            }
         }
+        return true;
     }
-    return true;
+    bool operator!=(const Matrix &right) const {return !(this == &right);}
 };
-
-bool operator!=(const Matrix &left, const Matrix &right) {return !(left == right);};
 
 #endif
