@@ -78,7 +78,7 @@ public:
     friend bool operator!=(const Matrix &left, const Matrix &right);
 };
 
-bool operator==(const Matrix &left, const Matrix &right)  {
+bool operator==(const Matrix &left, const Matrix &right) {
     if (left.getRows() != right.getRows() || left.getColumns() != right.getColumns())
         return false;
     for (size_t i = 0; i < left.rows; i++) {
@@ -90,16 +90,6 @@ bool operator==(const Matrix &left, const Matrix &right)  {
     return true;
 };
 
-bool operator!=(const Matrix &left, const Matrix &right)  {
-    if (left.getRows() != right.getRows() || left.getColumns() != right.getColumns())
-        return true;
-    for (size_t i = 0; i < left.rows; i++) {
-        for (size_t j = 0; j < left.cols; j++) {
-            if (left[i][j] == right[i][j])
-                return false;
-        }
-    }
-    return true;
-};
+bool operator!=(const Matrix &left, const Matrix &right) {return !(left == right);};
 
 #endif
