@@ -40,16 +40,6 @@ public:
     ~Matrix() {
         free(matrix);
     }
-    Matrix(const Matrix& m)
-        : matrix(m.matrix), rows(m.rows), cols(m.cols), N(m.N)
-    {}
-    Matrix& operator=(const Matrix& m) {
-        matrix = m.matrix;
-        rows = m.rows;
-        cols = m.cols;
-        N = m.N;
-        return *this;
-    }
 
     Vector operator[](const size_t x) {
         if ((x < 0) || (x >= rows)) {
