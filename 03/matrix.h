@@ -11,11 +11,9 @@ private:
     class Vector {
     private:
         size_t len;
-        int* vector;
+        int* vector = nullptr;
 
     public:
-        Vector() : len(0) {}
-
         Vector(size_t n, int* vec) : len(n), vector(vec) {}
 
         const int operator[](const size_t y) const {
@@ -39,14 +37,14 @@ public:
         matrix = new int[N];
     }
     ~Matrix() {
-        free(matrix);
+        delete[] matrix;
     }
     Matrix(const Matrix& m)
         : rows(m.rows), cols(m.cols), N(m.N)
     {
         int* tmp = new int[m.N];
         if (matrix != nullptr)
-            free(matrix);
+            delete[] matrix;
         matrix = tmp;
         std::copy(m.matrix, m.matrix + N, matrix);
     }
@@ -59,7 +57,7 @@ public:
         int* tmp = new int[m.N];
 
         if (matrix != nullptr)
-            free(matrix);
+            delete[] matrix;
         matrix = tmp;
         std::copy(m.matrix, m.matrix + N, matrix);
         return *this;
