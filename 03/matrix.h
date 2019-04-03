@@ -3,7 +3,7 @@
 
 class Matrix {
 private:
-    int* matrix;
+    int* matrix = nullptr;
     size_t rows;
     size_t cols;
     size_t N;
@@ -34,11 +34,35 @@ private:
     };
 
 public:
+    Matrix() : rows(0), cols(0), N(0) {}
     Matrix(size_t x, size_t y) : rows(x), cols(y), N(x * y) {
         matrix = new int[N];
     }
     ~Matrix() {
         free(matrix);
+    }
+    Matrix(const Matrix& m)
+        : rows(m.rows), cols(m.cols), N(m.N)
+    {
+        int* tmp = new int[m.N];
+        if (matrix != nullptr)
+            free(matrix);
+        matrix = tmp;
+        std::copy(m.matrix, m.matrix + N, matrix);
+    }
+    Matrix& operator=(const Matrix& m) {
+        if (this == &m)
+            return *this;
+        rows = m.rows;
+        cols = m.cols;
+        N = m.N;
+        int* tmp = new int[m.N];
+
+        if (matrix != nullptr)
+            free(matrix);
+        matrix = tmp;
+        std::copy(m.matrix, m.matrix + N, matrix);
+        return *this;
     }
 
     Vector operator[](const size_t x) {
