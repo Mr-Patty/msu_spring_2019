@@ -22,7 +22,7 @@ public:
     }
 
     template <class... ArgsT>
-    Error operator()(ArgsT... args)
+    Error operator()(ArgsT&... args)
     {
         return process(args...);
     }
@@ -30,7 +30,7 @@ public:
 private:
     std::ostream &out_;
     // process использует variadic templates
-    Error cout(bool& val) {
+    Error save(bool& val) {
         if (val)
             out_ << "true" << Separator;
         else
@@ -39,19 +39,19 @@ private:
         return Error::NoError;
     }
 
-    Error cout(uint64_t& val) {
+    Error save(uint64_t& val) {
         out_ << val << Separator;
         return Error::NoError;
     }
 
     template<class T>
     Error process(T&& val) {
-        return cout(std::forward<T>(val));
+        return save(std::forward<T>(val));
     }
 
     template <class T, class... Args>
     Error process(T&& val, Args&&... args) {
-        Error error = cout(std::forward<T>(val));
+        Error error = save(std::forward<T>(val));
         if (error == Error::NoError)
             return process(std::forward<Args>(args)...);
         else
@@ -82,7 +82,7 @@ public:
 private:
     std::istream &in_;
     // process использует variadic templates
-    Error cin(bool& val) {
+    Error load(bool& val) {
         std::string text;
         in_ >> text;
 
@@ -96,7 +96,7 @@ private:
         return Error::NoError;
     }
 
-    Error cin(uint64_t& val) {
+    Error load(uint64_t& val) {
         std::string text;
         in_ >> text;
 
@@ -115,12 +115,12 @@ private:
 
     template<class T>
     Error process(T&& val) {
-        return cin(std::forward<T>(val));
+        return load(std::forward<T>(val));
     }
 
     template <class T, class... Args>
     Error process(T&& val, Args&&... args) {
-        Error error = cin(std::forward<T>(val));
+        Error error = load(std::forward<T>(val));
         if (error == Error::NoError)
             return process(std::forward<Args>(args)...);
         else
