@@ -30,7 +30,7 @@ public:
 private:
     std::ostream &out_;
     // process использует variadic templates
-    Error save(bool& val) {
+    Error save(const bool val) {
         if (val)
             out_ << "true" << Separator;
         else
@@ -39,7 +39,7 @@ private:
         return Error::NoError;
     }
 
-    Error save(uint64_t& val) {
+    Error save(const uint64_t val) {
         out_ << val << Separator;
         return Error::NoError;
     }
@@ -74,9 +74,9 @@ public:
     }
 
     template <class... ArgsT>
-    Error operator()(ArgsT&... args)
+    Error operator()(ArgsT&&... args)
     {
-        return process(args...);
+        return process(std::forward<ArgsT>(args)...);
     }
 
 private:
