@@ -32,7 +32,7 @@ void my_sort(const char* file) {
         std::sort(begin(vec), end(vec));
         {
             std::lock_guard<std::mutex> lock(mut);
-            std::ofstream out("tmp/" + std::to_string(N) + ".txt");
+            std::ofstream out("tmp/" + std::to_string(N) + ".bin", std::ios::binary );
             for (auto j : vec) {
                 if (j != 0)
                     out << j << " ";
@@ -45,18 +45,27 @@ void my_sort(const char* file) {
     fclose(fp);
 }
 
+void my_merge(std::string inOne, std::string inTwo, std::string output) {
+    std::ifstream inputOne(inOne, std::ios::binary );
+    std::ifstream inputTwo(inTwo, std::ios::binary );
+    std::ofstream mergeFile(output, std::ios::binary );
+    std::merge(std::istream_iterator<uint64_t>(inputOne), std::istream_iterator<uint64_t>(),
+               std::istream_iterator<uint64_t>(inputTwo), std::istream_iterator<uint64_t>(),
+               std::ostream_iterator<uint64_t>(mergeFile, " "));
+   return;
+}
+
 void mergeFiles(size_t start, size_t end) {
-    auto next = std::to_string(start + 1);
-    auto curr = std::to_string(start);
-    std::rename( ("tmp/" + curr + ".txt").c_str(), ("tmp/a_" + curr + ".txt").c_str() );
+    std::string next = std::to_string(start + 1);
+    std::string curr = std::to_string(start);
+    std::rename( ("tmp/" + curr + ".bin").c_str(), ("tmp/a_" + curr + ".bin").c_str() );
     while (start < end) {
-        std::ofstream mergeFile("tmp/a_" + next + ".txt");
-        std::ifstream inputOne("tmp/a_" + curr + ".txt");
-        std::ifstream inputTwo("tmp/" + next + ".txt");
-        std::merge(std::istream_iterator<uint64_t>(inputOne), std::istream_iterator<uint64_t>(),
-                   std::istream_iterator<uint64_t>(inputTwo), std::istream_iterator<uint64_t>(),
-                   std::ostream_iterator<uint64_t>(mergeFile, " "));
+        my_merge("tmp/a_" + curr + ".bin", "tmp/" + next + ".bin",
+                "tmp/a_" + next + ".bin");
+
         start++;
+        next = std::to_string(start + 1);
+        curr = std::to_string(start);
     }
     return;
 }
@@ -88,12 +97,8 @@ int main(int argc, char* argv[]) {
     if (N == 0)
         std::rename( ("tmp/" + std::to_string(N) + ".txt").c_str(), outputFile);
     else {
-        std::ofstream mergeFile(outputFile);
-        std::ifstream inputOne("tmp/a_" + std::to_string(N / 2) + ".txt");
-        std::ifstream inputTwo("tmp/a_" + std::to_string(N) + ".txt");
-        std::merge(std::istream_iterator<uint64_t>(inputOne), std::istream_iterator<uint64_t>(),
-                   std::istream_iterator<uint64_t>(inputTwo), std::istream_iterator<uint64_t>(),
-                   std::ostream_iterator<uint64_t>(mergeFile, " "));
+        my_merge("tmp/a_" + std::to_string(N / 2) + ".bin",
+                "tmp/a_" + std::to_string(N) + ".bin", outputFile);
     }
     // boost::remove_all("tmp");
    system("rm -r tmp/");
