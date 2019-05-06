@@ -6,6 +6,10 @@
 #include <iterator>
 #include <thread>
 #include <cstdio>
+#include <sys/stat.h>
+#include <unistd.h>
+// #include <boost/filesystem>
+
 
 size_t batch_size = 10000;
 size_t N = 0;
@@ -16,13 +20,13 @@ void my_sort(const char* file) {
     FILE *fp;
     if ((fp = fopen(file, "rb")) == NULL) {
         std::cout << "Cannot open file." << std::endl;
-        exit(1);
+        return;
     }
     while(!feof(fp)) {
 
         {
             std::lock_guard<std::mutex> lock(mut);
-            fread(static_cast<void*>(vec.data()), sizeof(uint64_t), batch_size, fp);
+            fread(vec.data(), sizeof(uint64_t), batch_size, fp);
         }
 
         std::sort(begin(vec), end(vec));
@@ -42,11 +46,13 @@ void my_sort(const char* file) {
 }
 
 void mergeFiles(size_t start, size_t end) {
-    std::rename( ("tmp/" + std::to_string(start) + ".txt").c_str(), ("tmp/a_" + std::to_string(start) + ".txt").c_str() );
+    auto next = std::to_string(start + 1);
+    auto curr = std::to_string(start);
+    std::rename( ("tmp/" + curr + ".txt").c_str(), ("tmp/a_" + curr + ".txt").c_str() );
     while (start < end) {
-        std::ofstream mergeFile("tmp/a_" + std::to_string(start + 1) + ".txt");
-        std::ifstream inputOne("tmp/a_" + std::to_string(start) + ".txt");
-        std::ifstream inputTwo("tmp/" + std::to_string(start + 1) + ".txt");
+        std::ofstream mergeFile("tmp/a_" + next + ".txt");
+        std::ifstream inputOne("tmp/a_" + curr + ".txt");
+        std::ifstream inputTwo("tmp/" + next + ".txt");
         std::merge(std::istream_iterator<uint64_t>(inputOne), std::istream_iterator<uint64_t>(),
                    std::istream_iterator<uint64_t>(inputTwo), std::istream_iterator<uint64_t>(),
                    std::ostream_iterator<uint64_t>(mergeFile, " "));
@@ -61,7 +67,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    system("mkdir tmp");
+    mkdir("tmp", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     auto file = argv[1];
     auto outputFile = argv[2];
     std::thread t1(my_sort, file);
@@ -77,7 +83,6 @@ int main(int argc, char* argv[]) {
 
         t3.join();
         t4.join();
-
     }
 
     if (N == 0)
@@ -90,6 +95,7 @@ int main(int argc, char* argv[]) {
                    std::istream_iterator<uint64_t>(inputTwo), std::istream_iterator<uint64_t>(),
                    std::ostream_iterator<uint64_t>(mergeFile, " "));
     }
-    system("rm -r tmp/");
-    return 0;
+    // boost::remove_all("tmp");
+   system("rm -r tmp/");
+   return 0;
 }
