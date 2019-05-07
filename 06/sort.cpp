@@ -5,11 +5,9 @@
 #include <mutex>
 #include <iterator>
 #include <thread>
-#include <cstdio>
-#include <sys/stat.h>
-#include <unistd.h>
-// #include <boost/filesystem>
+#include <filesystem>
 
+namespace fs = std::filesystem;
 
 size_t batch_size = 10000;
 size_t N = 0;
@@ -76,7 +74,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    mkdir("tmp", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    fs::create_directories("tmp");
     auto file = argv[1];
     auto outputFile = argv[2];
     std::thread t1(my_sort, file);
@@ -100,7 +98,6 @@ int main(int argc, char* argv[]) {
         my_merge("tmp/a_" + std::to_string(N / 2) + ".bin",
                 "tmp/a_" + std::to_string(N) + ".bin", outputFile);
     }
-    // boost::remove_all("tmp");
-   system("rm -r tmp/");
-   return 0;
+    fs::remove_all("tmp");
+    return 0;
 }
