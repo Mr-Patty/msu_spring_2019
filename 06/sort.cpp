@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 size_t batch_size = 10000;
 std::mutex mut;
 
-void my_merge(std::string inOne, std::string inTwo, std::string output) {
+void my_merge(const std::string& inOne, const std::string& inTwo, const std::string& output) {
     std::ifstream inputOne(inOne, std::ios::binary );
     std::ifstream inputTwo(inTwo, std::ios::binary );
     std::ofstream mergeFile(output, std::ios::binary );
@@ -25,7 +25,7 @@ void my_merge(std::string inOne, std::string inTwo, std::string output) {
    return;
 }
 
-void my_sort(const char* file, std::string prefix) {
+void my_sort(const char* file, const std::string& prefix) {
     std::vector<uint64_t> vec(batch_size);
     FILE *fp;
     if ((fp = fopen(file, "rb")) == NULL) {
